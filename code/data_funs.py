@@ -2,6 +2,7 @@ import numpy as np
 import numpy.random as rand
 import scipy.optimize as opt
 
+# Simulate data and truncated data within a Lq ball
 def simulate_data(n, d, q, mu = None, seed = None):
     
     # Set seed
