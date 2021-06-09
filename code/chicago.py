@@ -30,13 +30,16 @@ import chart_studio.plotly as py
 chart_studio.tools.set_credentials_file(username=mykeys.username,
                                         api_key=mykeys.api)
 
+# Mixed Multivariate Normal distribution log p(x; theta)
 def logp(X, mu, sigma = 0.06): 
         return np.log(np.exp(-np.sum((X-mu[0:2])**2/(2*sigma**2), 0)) +
                       np.exp(-np.sum((X-mu[2:4])**2/(2*sigma**2), 0)))
     
+# Use autograd to get derivatives elementwise
 grad_logp  = ag.elementwise_grad(logp, 0)
 grad2_logp = ag.elementwise_grad(grad_logp, 0) 
 
+# This is a slow implementaiton of the psi function for mixed MVN, can be vectorised to speed up
 def psi_mixed_mvn(X, theta, sigma = 0.06):
     p  = np.zeros(X.shape)
     dp = np.zeros(X.shape)
@@ -46,6 +49,7 @@ def psi_mixed_mvn(X, theta, sigma = 0.06):
         
     return p, dp
 
+# Truncated score matching objective function
 def truncsm(theta, X, Px, g, dg, psi):
     p, dp = psi(X, theta)
     t1 = np.mean(np.sum(p**2, 1)*g)
@@ -53,6 +57,7 @@ def truncsm(theta, X, Px, g, dg, psi):
     t3 = np.mean(np.sum(p*dg, 1))
     return t1 + 2*(t2 + t3)
 
+# Chicago plot using plotly
 def chicago_plotly(fname = "chicago"):
     crime = pd.read_csv("data/crime.csv", index_col = 0)
     bound = pd.read_csv("data/chicago_boundaries.csv", index_col = None, header=None)
@@ -101,6 +106,7 @@ def chicago_plotly(fname = "chicago"):
     
     py.plot(fig, filename = fname, auto_open=True)
 
+# Chicago plot using seaborn
 def chicago_regular():
     crime = pd.read_csv("data/crime.csv", index_col = 0)
     bound = pd.read_csv("data/chicago_boundaries.csv", index_col = None, header=None)
@@ -137,6 +143,7 @@ def chicago_regular():
     fig.tight_layout()
     plt.show()
 
+# Chicago plot using seaborn where it is being estimated
 def chicago_estimate():
     
     crime = pd.read_csv("data/crime.csv", index_col = 0)
@@ -156,17 +163,14 @@ def chicago_estimate():
     dg = (X - Px)/g[:,None]
     
     # Estimate with truncSM
-    # obj = lambda theta: truncsm(theta, X, Px, g, dg, psi_mixed_mvn)
-    # ini = np.hstack((np.mean(X, 0), np.mean(X, 0))) + rand.randn(4)*0.06
-    # mu = minimize(obj, ini).x
-    # print(mu.x)
-    mu = [-87.59468382,  41.74283899, -87.77178438, 41.87616018];
-
+    obj = lambda theta: truncsm(theta, X, Px, g, dg, psi_mixed_mvn)
+    ini = np.hstack((np.mean(X, 0), np.mean(X, 0))) + rand.randn(4)*0.06
+    mu = minimize(obj, ini).x
+    print(mu.x)
     
     # Estimate with MLE
     clf = mixture.GaussianMixture(n_components=2, covariance_type='diag')
     clf.fit(X);
-
     
     # Plot options
     sns.set(rc={'figure.figsize':(7.7,8.27)})    
@@ -206,5 +210,6 @@ def main():
     # chicago_plotly()
     # chicago_regular()
     chicago_estimate()
+    
 if __name__ == "__main__":
     main()
