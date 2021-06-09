@@ -117,7 +117,7 @@ def mvn_box():
         np.repeat("Unobserved", len(Xtt))
         ))
     
-    # Estimate with truncSM
+    # Estimate with truncSM:
     obj = lambda theta: truncsm(theta, Xt, Px, g, dg, psi_mvn)
     mu = minimize(obj, np.random.randn(2, 1))
     print(mu.x)
