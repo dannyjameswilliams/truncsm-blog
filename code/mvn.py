@@ -18,20 +18,11 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Plotly interactive charts
-import plotly.graph_objects as go
-import plotly_keys as mykeys
-import chart_studio
-import chart_studio.plotly as py
-
-# Set key for plotly online
-chart_studio.tools.set_credentials_file(username=mykeys.username,
-                                        api_key=mykeys.api)
-
-
+# Psi for multivariate normal
 def psi_mvn(X, theta):
     return -(X-theta.T), -np.repeat(X.shape[1], X.shape[0])
 
+# Truncated Score Matching objective function
 def truncsm(theta, X, Px, g, dg, psi):
     p, dp = psi(X, theta)
     t1 = np.mean(np.sum(p**2, 1)*g)
@@ -39,6 +30,7 @@ def truncsm(theta, X, Px, g, dg, psi):
     t3 = np.mean(np.sum(p*dg, 1))
     return t1 + 2*(t2 + t3)
 
+# Plot MVN estimate in l2 ball truncation
 def mvn_l2():
        
     # Datasets
@@ -83,7 +75,7 @@ def mvn_l2():
     plt.savefig("plots/mvn_l2.png")
     plt.show()
     
-
+# Plot MVN estimate in rectangle truncation
 def mvn_box():
        
     # Datasets
