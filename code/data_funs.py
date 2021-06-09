@@ -33,7 +33,7 @@ def simulate_data(n, d, q, mu = None, seed = None):
         
     return Xt[0:n, :], Xall
 
-
+# Get projections on from a Lq ball
 def polydist_Lqball(X, q_bound, q_norm):
     
     # Variables
@@ -43,16 +43,18 @@ def polydist_Lqball(X, q_bound, q_norm):
     Px = np.empty((n, d))
     g  = np.empty(n)
     
+    # Define constraint function (Lq ball = 1)
     def constr(x):
         return np.linalg.norm(x, q_bound) - 1 
     constr = opt.NonlinearConstraint(constr, 0, 0)
     
     for i in range(n):
         
-        
+        # Objective function is to minimise the Lq norm from data to boundary
         def obj(x):
             return np.linalg.norm(X[i, :] - x, q_norm)
         
+        # Loop over 5 different initial conditions
         res = np.empty(5)
         xx  = np.empty((5, d))
         for j in range(5):
@@ -62,19 +64,8 @@ def polydist_Lqball(X, q_bound, q_norm):
             res[j]   = op.fun
             xx[j, :] = op.x
         
-        
+        # Choose the point which best satisfied the objective function
         Px[i, :] = xx[np.argmin(res)]
         g[i]     = res[np.argmin(res)]
     
     return Px, g    
-
-def get_Px(q = 2, h = 0.005):
-    
-    # Generate points for the boundary (L2)
-    xypoints = np.array([[x, y] for x in np.arange(-1, 1, h) for y in np.arange(-1, 1, h)])
-    lqnorm = np.linalg.norm(xypoints, q, 1)
-        
-    Px = xypoints[abs(lqnorm - 1) < 1e-3, :]
-    # Px = np.array([lqbound]).T # Set boundary points (NOT projections) as Px
-    
-    return Px
