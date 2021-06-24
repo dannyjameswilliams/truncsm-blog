@@ -2,6 +2,7 @@
 Truncated score matching in Python, for "How do we do data science without all of our data?" blog post.
 
 [Blog post on dannyjameswilliams.co.uk (Recommended)](https://dannyjameswilliams.co.uk/post/nodata/)
+
 [Blog post on blogs.compass.ac.uk](https://compass.blogs.bristol.ac.uk/2021/06/10/student-perspectives-data-science-without-data/)
 
 For the full paper on this project, [please see here](https://arxiv.org/pdf/1910.03834.pdf).
