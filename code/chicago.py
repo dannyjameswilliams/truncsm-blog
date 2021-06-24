@@ -57,54 +57,6 @@ def truncsm(theta, X, Px, g, dg, psi):
     t3 = np.mean(np.sum(p*dg, 1))
     return t1 + 2*(t2 + t3)
 
-# Chicago plot using plotly
-def chicago_plotly(fname = "chicago"):
-    crime = pd.read_csv("data/crime.csv", index_col = 0)
-    bound = pd.read_csv("data/chicago_boundaries.csv", index_col = None, header=None)
-    
-    fig = go.Figure([
-        go.Scattermapbox(lon=bound.iloc[:, 0].values, 
-                     lat=bound.iloc[:, 1].values,
-                     mode='markers',
-                     name='markers',
-                     marker=go.scattermapbox.Marker(
-                         size=6
-                     )
-                   # hoverinfo='skip'     
-    ),
-    go.Scattermapbox(lon=crime["Longitude"].values, 
-                   lat=crime["Latitude"].values,
-                   mode='markers',
-                   name='markers',
-                   marker=go.scattermapbox.Marker(
-                        size=11
-                   )
-                   # hoverinfo='skip'     
-    )
-    ])
-
-    fig.update_layout(
-        xaxis_title = "x",
-        yaxis_title = "y",
-        template = "plotly_white",
-        showlegend=False,
-        mapbox_style="open-street-map"
-    )
-    
-    fig.update_layout(
-        hovermode='closest',
-        mapbox=dict(
-            bearing = 0,
-            center = go.layout.mapbox.Center(
-                lat = 41.814574 + 0.025,
-                lon = -87.666467
-            ),
-            zoom = 9.25
-            )
-    )
-  
-    
-    py.plot(fig, filename = fname, auto_open=True)
 
 # Chicago plot using seaborn
 def chicago_regular():
@@ -166,7 +118,7 @@ def chicago_estimate():
     obj = lambda theta: truncsm(theta, X, Px, g, dg, psi_mixed_mvn)
     ini = np.hstack((np.mean(X, 0), np.mean(X, 0))) + rand.randn(4)*0.06
     mu = minimize(obj, ini).x
-    print(mu.x)
+    print(mu)
     
     # Estimate with MLE
     clf = mixture.GaussianMixture(n_components=2, covariance_type='diag')
@@ -204,11 +156,191 @@ def chicago_estimate():
     plt.savefig("plots/chicago_estimate.png")
     plt.show()
     
+
+# Chicago plot using plotly
+def chicago_plotly(fname = "chicago", web = False):
+    crime = pd.read_csv("data/crime.csv", index_col = 0)
+    bound = pd.read_csv("data/chicago_boundaries.csv", index_col = None, header=None)
     
+    fig = go.Figure([
+        go.Scattermapbox(lon=bound.iloc[:, 0].values, 
+                     lat=bound.iloc[:, 1].values,
+                     mode='markers',
+                     name='markers',
+                     
+                     marker=go.scattermapbox.Marker(
+                         size=6,
+                         color = "#323232"
+                     )
+                   # hoverinfo='skip'     
+    ),
+    go.Scattermapbox(lon=crime["Longitude"].values, 
+                   lat=crime["Latitude"].values,
+                   mode='markers',
+                   name='markers',
+                   marker=go.scattermapbox.Marker(
+                        size=8,
+                        color = "#2E00A1"
+                   )
+                   # hoverinfo='skip'     
+    )
+    ])
+
+    fig.update_layout(
+        xaxis_title = "x",
+        yaxis_title = "y",
+        template = "plotly_white",
+        showlegend=False
+        # mapbox_style="open-street-map"
+    )
+    
+    fig.update_layout(
+        hovermode='closest',
+        mapbox=dict(
+            bearing = 0,
+            center = go.layout.mapbox.Center(
+                lat = 41.814574 + 0.025,
+                lon = -87.666467
+            ),
+            zoom = 9.75
+            ),
+        margin=dict(
+            l=25,
+            r=25,
+            b=25,
+            t=25,
+            pad=1
+        )
+     )
+  
+    
+
+    if web:
+        py.plot(fig, filename = fname, auto_open=True)
+    else:
+        fig.show()
+        
+
+# Chicago plot using plotly
+def chicago_plotly_estimate(fname = "chicago_estimate", web = False):
+    
+    crime = pd.read_csv("data/crime.csv", index_col = 0)
+    bound = pd.read_csv("data/chicago_boundaries.csv", index_col = None, header=None).dropna()
+    
+    X  = crime.values
+    bound = bound.values
+    
+    # Calculate g
+    g  = np.empty(X.shape[0])
+    Px = np.empty(X.shape)    
+    for i in range(len(X)):
+        dist = np.sqrt(np.sum((X[i, :] - bound)**2, 1))
+        Px[i, :] = bound[np.argmin(dist), :]
+        g[i] = np.min(dist)
+        
+    dg = (X - Px)/g[:,None]
+    
+    # Estimate with truncSM
+    obj = lambda theta: truncsm(theta, X, Px, g, dg, psi_mixed_mvn)
+    ini = np.hstack((np.mean(X, 0), np.mean(X, 0))) + rand.randn(4)*0.06
+    mu = minimize(obj, ini).x
+    print(mu)
+
+    # Estimate with MLE
+    clf = mixture.GaussianMixture(n_components=2, covariance_type='diag')
+    clf.fit(X);
+    mle = clf.means_
+    
+    fig = go.Figure([
+        go.Scattermapbox(lon=bound[:, 0], 
+                     lat=bound[:, 1],
+                     mode='markers',
+                     name='markers',
+                     
+                     marker=go.scattermapbox.Marker(
+                         size=6,
+                         color = "#323232"
+                     ),
+                     showlegend = False
+                   # hoverinfo='skip'     
+    ),
+    go.Scattermapbox(lon=crime["Longitude"].values, 
+                   lat=crime["Latitude"].values,
+                   mode='markers',
+                   name='markers',
+                   marker=go.scattermapbox.Marker(
+                        size=8,
+                        color = "#2E00A1"
+                   ),
+                     showlegend = False
+                       
+    ),
+    go.Scattermapbox(lon=mu[[0, 2]], lat=mu[[1, 3]],
+                    mode='markers',
+                    marker=go.scattermapbox.Marker(
+                        size=13,
+                        color = "#c44e52"
+                    ),
+                    name = "truncSM"
+    ),
+    go.Scattermapbox(lon=mle[:, 0], lat=mle[:, 1],
+                   mode='markers',
+                   name='MLE',
+                   marker=go.scattermapbox.Marker(
+                        size=13,
+                        color = "#46bd66"
+                   ))
+    ])
+
+
+    fig.update_layout(
+        xaxis_title = "x",
+        yaxis_title = "y",
+        template = "plotly_white"
+    )
+    
+    fig.update_layout(
+        hovermode='closest',
+        mapbox=dict(
+            bearing = 0,
+            center = go.layout.mapbox.Center(
+                lat = 41.814574 + 0.025,
+                lon = -87.666467
+            ),
+            zoom = 9.75
+            ),
+        margin=dict(
+            l=25,
+            r=25,
+            b=25,
+            t=25,
+            pad=1
+        )
+     )
+  
+    fig.update_layout(
+        legend = dict(
+                    font = dict(
+                        size = 16, 
+                        color = "black")
+                ),
+        legend_title = dict(
+                          text = "Estimates",
+                          font = dict(
+                              size = 23, 
+                              color = "black")
+                    )
+        )
+
+    if web:
+        py.plot(fig, filename = fname, auto_open=True)
+    else:
+        fig.show()
     
 def main():
-    # chicago_plotly()
-    # chicago_regular()
+    # chicago_plotly(web=False)
+    chicago_regular()
+    # chicago_plotly_estimate(web=False)
     chicago_estimate()
     
 if __name__ == "__main__":
