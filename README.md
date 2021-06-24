@@ -9,7 +9,7 @@ For the full paper on this project, [please see here](https://arxiv.org/pdf/1910
 
 ## Installation 
 
-To use this work, please clone this repository to wherever you would like. It is recommended to create a virtual environement using `conda`, and then running
+To use this work, please clone this repository to wherever you would like. It is recommended to create a virtual environment using `conda`, and then running
 ```bash
 pip install requirements.txt
 ```
