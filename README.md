@@ -10,7 +10,7 @@ For the full paper on this project, [please see here](https://arxiv.org/pdf/1910
 ## Installation 
 
 To use this work, please clone this repository to wherever you would like. It is recommended to create a virtual environement using `conda`, and then running
-```
+```bash
 pip install requirements.txt
 ```
 while in the repository directory that you cloned to.
@@ -19,11 +19,11 @@ while in the repository directory that you cloned to.
 ## Usage for reproducing plots
 
 To reproduce the plots from the blog post, you can run any of 
-```
+```python
 python3 code/mvn.py
 ```
 or 
-```
+```python
 python3 code/chicago.py
 ```
 and the plots should appear. To view the Chicago plots 'on a map' like it is displayed on the personal blog post (not the COMPASS one), you will need to run the `chicago_plotly` and `chicago_plotly_estimate` functions inside of `chicago.py`. To save these, you need plotly API keys, as well as a Mapbox API key (all free).
@@ -37,7 +37,7 @@ To obtain some of the MVN simulated plots in the blog post, the code was run mul
 
 I have also separated some functions into a rather basic file, not packaged in anyway, containing the barebones to truncated score matching. This involves the objective function, `truncsm` as well as a basic statistical model `psi_mvn`. This will enable you to perform estimation as exemplified in the blog posts. For a simple example, see below.
 
-```
+```python
 import numpy as np
 
 # Simulate MVN data using numpy
