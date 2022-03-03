@@ -6,6 +6,8 @@ If you are looking for the [**Estimating Density Models with Truncation Boundari
 
 [Blog post on blogs.compass.ac.uk](https://compass.blogs.bristol.ac.uk/2021/06/10/student-perspectives-data-science-without-data/)
 
+For the original GitHub repo associated with the paper, [click here](https://github.com/anewgithubname/Truncated-Score-Matching).
+
 ## Installation 
 
 To use this work, please clone this repository to wherever you would like. It is recommended to create a virtual environment using `conda`, and then running
