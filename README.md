@@ -6,8 +6,6 @@ If you are looking for the [**Estimating Density Models with Truncation Boundari
 
 [Blog post on blogs.compass.ac.uk](https://compass.blogs.bristol.ac.uk/2021/06/10/student-perspectives-data-science-without-data/)
 
-For the full paper on this project, [please see here](https://arxiv.org/pdf/1910.03834.pdf).
-
 ## Installation 
 
 To use this work, please clone this repository to wherever you would like. It is recommended to create a virtual environment using `conda`, and then running
