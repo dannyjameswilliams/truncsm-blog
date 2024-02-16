@@ -1,6 +1,6 @@
 # truncsm-blog
 
-If you are looking for the [**Estimating Density Models with Truncation Boundaries using Score Matching. Song Liu, Takafumi Kanamori, & Daniel J. Williams (2021)**](https://arxiv.org/pdf/1910.03834.pdf), please click on the link to be directed to the arxiv paper. This repository is a simple implementation of the method for use in the following blog posts:
+If you are looking for the [**Estimating Density Models with Truncation Boundaries using Score Matching. Song Liu, Takafumi Kanamori, & Daniel J. Williams, JMLR, (2022)**](https://arxiv.org/pdf/1910.03834.pdf), please click on the link to be directed to the arxiv paper. This repository is a simple implementation of the method for use in the following blog posts:
 
 [Blog post on dannyjameswilliams.co.uk (Recommended)](https://dannyjameswilliams.co.uk/post/nodata/)
 
