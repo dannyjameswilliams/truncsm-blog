@@ -1,7 +1,10 @@
 
 import os, sys
-os.chdir('/home/danny/OneDrive/Personal Stuff/nodata')
-sys.path.append('/home/danny/OneDrive/Personal Stuff/nodata/code')
+current_file_path = os.path.dirname(os.path.realpath(__file__))
+parent_file_path  = os.path.dirname(current_file_path)
+
+sys.path.append(current_file_path)
+sys.path.append(parent_file_path)
 
 # other files
 import data_funs as df
